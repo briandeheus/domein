@@ -1,0 +1,426 @@
+/* domein — Swiss timetable. White, black, one red. No cards, no shadows,
+   no rounded corners. Typography and rules do all the work. */
+
+:root {
+  --red: #eb0000;
+  --ink: #0a0a0a;
+  --gray: #6f6f6f;
+  --hair: #c8c8c8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #fff;
+  color: var(--ink);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  border-radius: 0;
+}
+
+.wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* --- masthead --- */
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 28px 0 20px;
+}
+
+.wordmark {
+  font-size: clamp(44px, 7vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.wordmark .dot {
+  color: var(--red);
+}
+
+.masthead-meta {
+  flex-shrink: 0;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-end;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.kicker--gray {
+  color: var(--gray);
+}
+
+/* --- departure board strip --- */
+
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.board > div {
+  flex: 1 1 0;
+  min-width: 130px;
+  padding: 22px 24px 26px;
+  border-right: 1px solid var(--hair);
+}
+
+.board > div:first-child {
+  padding-left: 0;
+}
+
+.board > div:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.board dt {
+  margin-bottom: 10px;
+}
+
+.board dd {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.board dd.bad {
+  color: var(--red);
+}
+
+/* --- tabs --- */
+
+.tabs {
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+  border-bottom: 3px solid var(--ink);
+}
+
+.tab {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+  border-bottom: 4px solid transparent;
+  margin-bottom: -3px;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--red);
+}
+
+/* --- tables --- */
+
+.section {
+  padding-top: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  padding: 16px 16px 10px 0;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--ink);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 13px 16px 13px 0;
+  border-bottom: 1px solid var(--hair);
+  font-size: 15px;
+  vertical-align: baseline;
+}
+
+th.num,
+td.num {
+  text-align: right;
+}
+
+td.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+th.col-type {
+  width: 80px;
+}
+
+.row--off .cell-main,
+.row--off td {
+  color: var(--gray);
+}
+
+.cell-main {
+  font-weight: 700;
+}
+
+.cell-sub {
+  font-size: 12px;
+  color: var(--gray);
+  max-width: 380px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.flag--ok::before {
+  content: "● ";
+}
+
+.flag--err {
+  color: var(--red);
+}
+
+.flag--err::before {
+  content: "▲ ";
+}
+
+.flag--off {
+  color: var(--gray);
+}
+
+.flag--off::before {
+  content: "○ ";
+}
+
+.empty {
+  padding: 32px 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--gray);
+}
+
+/* --- buttons --- */
+
+.btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 0;
+  margin-left: 20px;
+  color: var(--ink);
+}
+
+.btn:hover:not(:disabled) {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.btn--red {
+  color: var(--red);
+}
+
+.btn--solid {
+  background: var(--ink);
+  color: #fff;
+  padding: 13px 26px;
+  margin-left: 0;
+}
+
+.btn--solid:hover:not(:disabled) {
+  background: var(--red);
+  text-decoration: none;
+}
+
+/* --- forms --- */
+
+.field {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid var(--ink);
+  background: transparent;
+  padding: 11px 0;
+  font-size: 15px;
+  outline: none;
+}
+
+.field:focus {
+  border-bottom-color: var(--red);
+}
+
+.field::placeholder {
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+select.field {
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+input[type="number"].field {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.addbar {
+  display: flex;
+  gap: 28px;
+  align-items: flex-end;
+  padding-top: 28px;
+}
+
+.addbar-grow {
+  flex: 3 1 240px;
+}
+
+.addbar-mid {
+  flex: 2 1 160px;
+}
+
+.addbar-small {
+  flex: 0 1 110px;
+}
+
+/* --- misc --- */
+
+.error {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.footnote {
+  margin-top: 20px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gray);
+  max-width: 640px;
+}
+
+/* --- login --- */
+
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-box .wordmark {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.login-rule {
+  border-top: 4px solid var(--ink);
+  margin: 22px 0 34px;
+}
+
+.login form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+/* --- responsive --- */
+
+@media (max-width: 720px) {
+  .masthead {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .masthead-meta {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .board > div {
+    padding-left: 0;
+  }
+
+  .addbar {
+    flex-wrap: wrap;
+  }
+
+  .addbar > div {
+    flex-basis: 100%;
+  }
+
+  td.actions .btn {
+    margin-left: 12px;
+  }
+}
