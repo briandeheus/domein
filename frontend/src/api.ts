@@ -64,41 +64,49 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-const get = <T,>(path: string) => req<T>(path);
-const post = <T,>(path: string, body?: unknown) =>
+const get = <T>(path: string) => req<T>(path);
+const post = <T>(path: string, body?: unknown) =>
   req<T>(path, {
     method: "POST",
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-const patch = <T,>(path: string, body: unknown) =>
+const patch = <T>(path: string, body: unknown) =>
   req<T>(path, { method: "PATCH", body: JSON.stringify(body) });
 const del = (path: string) => req<{ ok: boolean }>(path, { method: "DELETE" });
 
-export const api = {
-  login: (password: string) => post<{ ok: boolean }>("/api/login", { password }),
-  logout: () => post<{ ok: boolean }>("/api/logout"),
-  status: () => get<Status>("/api/status"),
+// Session endpoints are version-agnostic; resource endpoints live under /api/v1.
+const V1 = "/api/v1";
 
-  blocklists: () => get<Blocklist[]>("/api/blocklists"),
-  addBlocklist: (body: { url: string; name?: string; refresh_hours?: number }) =>
-    post<Blocklist>("/api/blocklists", body),
+export const api = {
+  login: (password: string) =>
+    post<{ ok: boolean }>("/api/login", { password }),
+  logout: () => post<{ ok: boolean }>("/api/logout"),
+  status: () => get<Status>(`${V1}/status`),
+
+  blocklists: () => get<Blocklist[]>(`${V1}/blocklists`),
+  addBlocklist: (body: {
+    url: string;
+    name?: string;
+    refresh_hours?: number;
+  }) => post<Blocklist>(`${V1}/blocklists`, body),
   patchBlocklist: (
     id: number,
     body: Partial<Pick<Blocklist, "enabled" | "name" | "refresh_hours">>,
-  ) => patch<Blocklist>(`/api/blocklists/${id}`, body),
-  refreshBlocklist: (id: number) => post<Blocklist>(`/api/blocklists/${id}/refresh`),
-  deleteBlocklist: (id: number) => del(`/api/blocklists/${id}`),
+  ) => patch<Blocklist>(`${V1}/blocklists/${id}`, body),
+  refreshBlocklist: (id: number) =>
+    post<Blocklist>(`${V1}/blocklists/${id}/refresh`),
+  deleteBlocklist: (id: number) => del(`${V1}/blocklists/${id}`),
 
-  records: () => get<DnsRecord[]>("/api/records"),
+  records: () => get<DnsRecord[]>(`${V1}/records`),
   addRecord: (body: { type: string; name: string; value: string }) =>
-    post<DnsRecord>("/api/records", body),
+    post<DnsRecord>(`${V1}/records`, body),
   patchRecord: (id: number, body: { enabled: boolean }) =>
-    patch<DnsRecord>(`/api/records/${id}`, body),
-  deleteRecord: (id: number) => del(`/api/records/${id}`),
+    patch<DnsRecord>(`${V1}/records/${id}`, body),
+  deleteRecord: (id: number) => del(`${V1}/records/${id}`),
 
-  allowlist: () => get<AllowEntry[]>("/api/allowlist"),
-  addAllow: (domain: string) => post<AllowEntry>("/api/allowlist", { domain }),
-  deleteAllow: (id: number) => del(`/api/allowlist/${id}`),
+  allowlist: () => get<AllowEntry[]>(`${V1}/allowlist`),
+  addAllow: (domain: string) => post<AllowEntry>(`${V1}/allowlist`, { domain }),
+  deleteAllow: (id: number) => del(`${V1}/allowlist/${id}`),
 };
 
 export function errorMessage(err: unknown): string {

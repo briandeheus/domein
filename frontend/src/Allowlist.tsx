@@ -80,15 +80,19 @@ export default function Allowlist({ onChanged }: { onChanged: () => void }) {
             onChange={(e) => setDomain(e.target.value)}
           />
         </div>
-        <button className="btn btn--solid" type="submit" disabled={busy || !domain.trim()}>
+        <button
+          className="btn btn--solid"
+          type="submit"
+          disabled={busy || !domain.trim()}
+        >
           Allow
         </button>
       </form>
 
       {error && <p className="error">{error}</p>}
       <p className="footnote">
-        Allowlisted domains are removed from every blocklist at compile time (exact
-        match).
+        Allowlisted domains are removed from every blocklist at compile time
+        (exact match).
       </p>
     </section>
   );

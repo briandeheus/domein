@@ -56,18 +56,11 @@ export default function App() {
           DOMEIN<span className="dot">.</span>
         </h1>
         <div className="masthead-meta">
-          <p className="kicker">DNS CONTROL BOARD</p>
-          <p className="kicker kicker--gray">
-            {new Date()
-              .toLocaleDateString("en-GB", {
-                weekday: "long",
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              })
-              .toUpperCase()}
-          </p>
-          <button className="btn btn--red" onClick={logout} style={{ margin: 0 }}>
+          <button
+            className="btn btn--red"
+            onClick={logout}
+            style={{ margin: 0 }}
+          >
             Log out
           </button>
         </div>
@@ -76,7 +69,10 @@ export default function App() {
       <dl className="board">
         <div>
           <dt className="kicker kicker--gray">Resolver</dt>
-          <dd className={dns?.running ? "" : "bad"} title={dns?.error ?? undefined}>
+          <dd
+            className={dns?.running ? "" : "bad"}
+            title={dns?.error ?? undefined}
+          >
             {dns?.running ? "RUNNING" : "DOWN"}
           </dd>
         </div>
@@ -96,14 +92,10 @@ export default function App() {
           <dt className="kicker kicker--gray">Records</dt>
           <dd>{status ? fmtNum(status.records) : "—"}</dd>
         </div>
-        <div>
-          <dt className="kicker kicker--gray">Port</dt>
-          <dd>{dns?.port ?? "—"}</dd>
-        </div>
       </dl>
 
       {dns && !dns.running && dns.error && (
-        <p className="error">RESOLVER DOWN — {dns.error}</p>
+        <p className="error">RESOLVER DOWN: {dns.error}</p>
       )}
 
       <nav className="tabs">

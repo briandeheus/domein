@@ -84,7 +84,9 @@ export default function Records({ onChanged }: { onChanged: () => void }) {
                   className="btn"
                   disabled={busy}
                   onClick={() =>
-                    run(() => api.patchRecord(record.id, { enabled: !record.enabled }))
+                    run(() =>
+                      api.patchRecord(record.id, { enabled: !record.enabled }),
+                    )
                   }
                 >
                   {record.enabled ? "Disable" : "Enable"}
@@ -154,8 +156,8 @@ export default function Records({ onChanged }: { onChanged: () => void }) {
       {error && <p className="error">{error}</p>}
       <p className="footnote">
         Prefix a name with *. for wildcard A/AAAA (covers the domain and all
-        subdomains). CNAME targets must be names this resolver itself answers for — a
-        dnsmasq limitation.
+        subdomains). CNAME targets must be names this resolver itself answers
+        for (a dnsmasq limitation).
       </p>
     </section>
   );

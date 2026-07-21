@@ -99,7 +99,9 @@ export default function Blocklists({ onChanged }: { onChanged: () => void }) {
                 <button
                   className="btn"
                   disabled={busyId !== null}
-                  onClick={() => run(list.id, () => api.refreshBlocklist(list.id))}
+                  onClick={() =>
+                    run(list.id, () => api.refreshBlocklist(list.id))
+                  }
                 >
                   {busyId === list.id ? "Working…" : "Refresh"}
                 </button>
@@ -119,7 +121,7 @@ export default function Blocklists({ onChanged }: { onChanged: () => void }) {
           {lists && lists.length === 0 && (
             <tr>
               <td colSpan={6} className="empty">
-                NO BLOCKLISTS — ADD ONE BELOW. TRY STEVENBLACK/HOSTS OR HAGEZI.
+                NO BLOCKLISTS. ADD ONE BELOW.
               </td>
             </tr>
           )}
@@ -165,7 +167,8 @@ export default function Blocklists({ onChanged }: { onChanged: () => void }) {
       {error && <p className="error">{error}</p>}
       <p className="footnote">
         Hosts-format and plain domain lists are supported. Lists are re-fetched
-        automatically on their interval; changes reload dnsmasq without downtime.
+        automatically on their interval; changes reload dnsmasq without
+        downtime.
       </p>
     </section>
   );

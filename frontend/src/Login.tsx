@@ -26,7 +26,9 @@ export default function Login({ onSuccess }: { onSuccess: () => void }) {
         <h1 className="wordmark">
           DOMEIN<span className="dot">.</span>
         </h1>
-        <p className="kicker kicker--gray">PRIVATE DNS — AUTHORIZED PERSONNEL ONLY</p>
+        <p className="kicker kicker--gray">
+          PRIVATE DNS. AUTHORIZED PERSONNEL ONLY.
+        </p>
         <div className="login-rule" />
         <form onSubmit={submit}>
           <input
@@ -37,7 +39,11 @@ export default function Login({ onSuccess }: { onSuccess: () => void }) {
             onChange={(e) => setPassword(e.target.value)}
             autoFocus
           />
-          <button className="btn btn--solid" type="submit" disabled={busy || !password}>
+          <button
+            className="btn btn--solid"
+            type="submit"
+            disabled={busy || !password}
+          >
             ENTER
           </button>
         </form>

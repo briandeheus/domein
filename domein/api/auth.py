@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Request
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
-from . import config
+from domein import config
 
 COOKIE = "domein_session"
 

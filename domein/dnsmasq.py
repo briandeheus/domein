@@ -1,21 +1,13 @@
-"""dnsmasq lifecycle management and config compilation.
-
-All dnsmasq state lives as generated files in the data dir, rebuilt from the
-database on every change:
-
-- blocked.hosts   compiled blocklists (addn-hosts, reloadable via SIGHUP)
-- records.hosts   custom A/AAAA records (addn-hosts, reloadable via SIGHUP)
-- records.conf    CNAME/TXT/wildcard records (conf-file, needs a restart)
-- dnsmasq.conf    base config, written at every start
-"""
-
 import asyncio
+import logging
 import signal
 import time
 from collections import deque
 from pathlib import Path
 
-from . import config, db
+from domein import config, db
+
+log = logging.getLogger(__name__)
 
 BLOCK_TARGETS = ("0.0.0.0", "::")
 
@@ -62,6 +54,18 @@ def compile_records() -> tuple[bool, bool]:
 
 
 class DnsmasqManager:
+    """
+    dnsmasq lifecycle management and config compilation.
+
+    All dnsmasq state lives as generated files in the data dir, rebuilt from the
+    database on every change:
+
+    - blocked.hosts     compiled blocklists (addn-hosts, reloadable via SIGHUP)
+    - records.hosts     custom A/AAAA records (addn-hosts, reloadable via SIGHUP)
+    - records.conf      CNAME/TXT/wildcard records (conf-file, needs a restart)
+    - dnsmasq.conf      base config, written at every start
+    """
+
     def __init__(self) -> None:
         self.proc: asyncio.subprocess.Process | None = None
         self.started_at: float | None = None
@@ -97,18 +101,23 @@ class DnsmasqManager:
             f"addn-hosts={config.DATA_DIR / 'records.hosts'}",
             f"conf-file={config.DATA_DIR / 'records.conf'}",
         ]
+
         if config.DNS_LISTEN:
             lines += [f"listen-address={config.DNS_LISTEN}", "bind-interfaces"]
+
         path = config.DATA_DIR / "dnsmasq.conf"
         path.write_text("\n".join(lines) + "\n")
+
         return path
 
     async def _start(self) -> None:
         conf = self._write_base_conf()
+
         for name in ("blocked.hosts", "records.hosts", "records.conf"):
             path = config.DATA_DIR / name
             if not path.exists():
                 path.write_text("")
+
         try:
             self.proc = await asyncio.create_subprocess_exec(
                 config.DNSMASQ_BIN,
@@ -120,11 +129,13 @@ class DnsmasqManager:
             )
         except FileNotFoundError:
             self.proc = None
-            self.last_error = f"dnsmasq binary not found ({config.DNSMASQ_BIN})"
+            self.last_error = "dnsmasq binary not found"
             return
+
         self._stderr_tail.clear()
         asyncio.get_running_loop().create_task(self._watch(self.proc))
         await asyncio.sleep(0.5)
+
         if self.running:
             self.started_at = time.time()
             self.last_error = None
@@ -136,26 +147,36 @@ class DnsmasqManager:
 
     async def _watch(self, proc: asyncio.subprocess.Process) -> None:
         assert proc.stderr is not None
+
         while True:
             line = await proc.stderr.readline()
             if not line:
                 break
+
             text = line.decode(errors="replace").rstrip()
             self._stderr_tail.append(text)
-            print(f"[dnsmasq] {text}", flush=True)
+            log.info(text)
+
         await proc.wait()
+
         if proc is self.proc and proc.returncode not in (0, -signal.SIGTERM):
             tail = self._stderr_tail[-1] if self._stderr_tail else ""
             self.last_error = f"dnsmasq exited (code {proc.returncode}) {tail}".strip()
 
     async def _stop(self) -> None:
-        if self.running and self.proc:
-            self.proc.terminate()
-            try:
-                await asyncio.wait_for(self.proc.wait(), timeout=5)
-            except asyncio.TimeoutError:
-                self.proc.kill()
-                await self.proc.wait()
+        if not self.proc:
+            return
+        if not self.running:
+            return
+
+        self.proc.terminate()
+
+        try:
+            await asyncio.wait_for(self.proc.wait(), timeout=5)
+        except asyncio.TimeoutError:
+            self.proc.kill()
+            await self.proc.wait()
+
         self.proc = None
 
     async def stop(self) -> None:
@@ -163,13 +184,16 @@ class DnsmasqManager:
             await self._stop()
 
     async def apply(self) -> None:
-        """Recompile all generated files and reload/restart dnsmasq as needed."""
+        """Recompile all generated files and reload/restart dnsmasq."""
         async with self._lock:
             blocked_changed, self.blocked_count = compile_blocked_hosts()
             rec_hosts_changed, rec_conf_changed = compile_records()
+
             if not self.running or rec_conf_changed:
+                # Restart dnsmasq if it's not running or the conf file changed.
                 await self._stop()
                 await self._start()
+
             elif blocked_changed or rec_hosts_changed:
                 assert self.proc is not None
                 self.proc.send_signal(signal.SIGHUP)
