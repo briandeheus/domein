@@ -52,7 +52,7 @@ resolver as DOWN with the reason.
 Get the code onto the server and run the setup script as root:
 
 ```sh
-git clone <repo> /opt/domein   # or rsync a checkout there
+git clone https://github.com/briandeheus/domein.git /opt/domein   # or rsync a checkout there if you're feeling spicy
 cd /opt/domein
 ./bin/setup.sh
 ```
@@ -64,7 +64,7 @@ listener, the `domein` system user, python dependencies, the frontend build
 systemd unit. It is idempotent: re-run it after pulling updates, and it
 never overwrites an existing `/etc/domein.env`.
 
-Afterwards:
+After setting up:
 
 1. Set a real password in `/etc/domein.env`, then `systemctl restart domein`.
 2. Point your router's DHCP DNS at the server. UI is on port 8080. Put a
