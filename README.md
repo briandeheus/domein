@@ -8,6 +8,8 @@ of them. Subscribe to blocklists, add DNS records for your local services,
 and rescue the occasional false positive, all from a single web page behind
 a single password.
 
+![The domein web UI: status board and blocklist management](.files/domein-screenshot.png)
+
 - **Blocklists**: add by URL (hosts-format or plain domain lists), per-list
   refresh interval, conditional fetches (ETag/Last-Modified). Updates reload
   dnsmasq via SIGHUP: zero downtime.
