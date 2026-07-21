@@ -2,6 +2,8 @@
 name = "domein"
 version = "0.1.0"
 description = "Self-hosted DNS blocklist manager and local records, with dnsmasq under the hood."
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
